@@ -6,7 +6,7 @@ import re
 
 osm_file = open("central-west-london.osm", "r")
 
-###Iterative Parsing
+#Iterative Parsing
 
 def count_tags(filename):
     tags = {}
@@ -24,11 +24,8 @@ def Iter_parse():
 
     tags = count_tags(osm_file)
     pprint.pprint(tags)
-    
-if __name__ == "__main__":
-    Iter_parse()
 
-###Audit street names
+#Audit street names
 street_type_re = re.compile(r'\S+\.?$', re.IGNORECASE)
 street_types = defaultdict(int)
 
@@ -50,11 +47,15 @@ def is_street_name(elem):
     return (elem.tag == "tag") and (elem.attrib['k'] == "addr:street")
 
 def audit():
-    for event, elem in ET.iterparse(osm_file):
-        if is_street_name(elem):
-            audit_street_type(street_types, elem.attrib['v'])    
+    for event, elem in ET.iterparse(osm_file, events=("start",)):
+        if elem.tag == "way":
+            for tag in elem.iter("tag"):
+                if is_street_name(tag):
+                    audit_street_type(street_types, tag.attrib['v'])    
     print_sorted_dict(street_types)    
 
-if __name__ == '__main__':
-    audit()
-#Inconsistency in street names noted
+if __name__ == "__main__":
+    #Iter_parse() #call function iter_parse
+    #osm_file.seek(0) #go back to the begining of the dataset
+    audit() #call function audit
+
