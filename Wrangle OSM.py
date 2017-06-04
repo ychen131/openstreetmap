@@ -2,11 +2,12 @@
 import xml.etree.cElementTree as ET
 from collections import defaultdict
 import pprint
+import string
 import re
 
-osm_file = open("central-west-london.osm", "r")
+cw_london = "central-west-london.osm"
 
-#Iterative Parsing
+#Iterative Parsing--------------------------------------------------------------------------------
 
 def count_tags(filename):
     tags = {}
@@ -19,22 +20,33 @@ def count_tags(filename):
             tags[elem.tag] = 1
             
     return tags
-            
+        
+# General data check, count number of tag types.
 def Iter_parse():
 
-    tags = count_tags(osm_file)
+    tags = count_tags(cw_london)
     pprint.pprint(tags)
 
-#Audit street names
+#Audit street names------------------------------------------------------------------------------
+
+# Regular expression to check for characters at end of string, including optional period.
+# Eg "Street" or "St."
 street_type_re = re.compile(r'\S+\.?$', re.IGNORECASE)
-street_types = defaultdict(int)
+
+# Dictionary of unique street names. Defaults to empty set.
+# street_types = defaultdict(set)
+
+# Common street names
+expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road", 
+            "Road", "Parkway", "Commons", "Close"]
+
 
 def audit_street_type(street_types, street_name):
     m = street_type_re.search(street_name)
     if m:
         street_type = m.group()
-
-        street_types[street_type] += 1
+        if street_type not in expected:
+            street_types[street_type].add(street_name)
 
 def print_sorted_dict(d):
     keys = d.keys()
@@ -46,16 +58,71 @@ def print_sorted_dict(d):
 def is_street_name(elem):
     return (elem.tag == "tag") and (elem.attrib['k'] == "addr:street")
 
-def audit():
+# Iterate over the osmfile and create a dictionary mapping from expected street names
+# to collected streets.
+def audit(osmfile):
+    osm_file = open(osmfile, "r")
+    street_types = defaultdict(set)
     for event, elem in ET.iterparse(osm_file, events=("start",)):
-        if elem.tag == "way":
+
+        if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
                 if is_street_name(tag):
-                    audit_street_type(street_types, tag.attrib['v'])    
-    print_sorted_dict(street_types)    
+                    audit_street_type(street_types, tag.attrib['v'])
+    osm_file.close()
+    return street_types   
+
+#Improving Street names
+
+#Mapping for names to be updated
+mapping = { "St": "Street",
+            "Sreet":"Street",
+            "St.":"Street",
+            "Steet":"Street",
+            "Strreet":"Street",
+            "Sq":"Square",
+            "Rd": "Road",
+            "Snowfields": "Snowsfields",
+            "Wqalk":"Walk"
+            }
+
+# Function to perfom data cleansing on street name
+def update_name(name, mapping):
+    name = string.capwords(name) #Change all the street name to start with capital letter. 
+    #In three cases, there is a space after the street name, for example, "Little New Street ". 
+    #Function "string.capwords()" fixes this issue before street names is parsed for regular expression check.
+    m = street_type_re.search(name)
+    if m:
+        street_type = m.group()
+        if street_type not in expected and street_type in mapping:
+            name = re.sub(street_type_re, mapping[street_type], name)
+    else:
+        print "Strange street name: " % name #print any strange street name does not match the regular expression
+
+    if "Saint " in name or "St. " in name: 
+    #having abbreviation of "Saint" is very common in the UK.
+    #However there are inconsistency in abb: "St ", "Saint " and "St. ". They are changed to "St"
+
+        name = name.replace("Saint ", "St ")
+        name = name.replace("St. ", "St ")
+    return name
+ 
+def improve_street_name():
+    st_types = audit(cw_london)
+    pprint.pprint(dict(st_types))
+
+    for st_type, ways in st_types.iteritems():
+        for name in ways:
+            better_name = update_name(name, mapping)
+            print name, "=>", better_name
+#Other unfixed problem------------------------------------------------------------------------------------------------------------- 
+#1. apostrophe in the work. Many cases of inconsistency usage of apostrophe noted. 
+#However, due to limited local knowledge and time-consuming nature to search for the correct names, 
+#they remained unchanged in the data set.
+
 
 if __name__ == "__main__":
     #Iter_parse() #call function iter_parse
     #osm_file.seek(0) #go back to the begining of the dataset
-    audit() #call function audit
-
+    #audit() #call function audit
+    improve_street_name()
