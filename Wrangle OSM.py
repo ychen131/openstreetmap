@@ -28,7 +28,6 @@ def Iter_parse():
     pprint.pprint(tags)
 
 #Audit street names------------------------------------------------------------------------------
-
 # Regular expression to check for characters at end of string, including optional period.
 # Eg "Street" or "St."
 street_type_re = re.compile(r'\S+\.?$', re.IGNORECASE)
@@ -69,6 +68,7 @@ def audit(osmfile):
             for tag in elem.iter("tag"):
                 if is_street_name(tag):
                     audit_street_type(street_types, tag.attrib['v'])
+
     osm_file.close()
     return street_types   
 
@@ -115,6 +115,45 @@ def improve_street_name():
         for name in ways:
             better_name = update_name(name, mapping)
             print name, "=>", better_name
+
+#Double Postcode for one address---------------------------------------------------------------------------------------------------
+#We noted there are 6 addresses have two postcodes. After performing some research, it is noted that they are the rare cases that
+# both postcodes are for the same address. Therefore, we will keep the first postcode. eg. 'W2 1LN;W2 1LW'
+
+#regular expression to check whether postcode is in appropriate format
+postcode_re = re.compile('^[A-Z]{1,2}[0-9]{1,2}[A-Z]? [0-9][A-Z]{2}$') 
+
+def is_postcode(elem):
+    return (elem.tag == "tag") and (elem.attrib['k'] == "addr:postcode")
+
+
+#search for postcodes within "way" and "node"
+def find_postcode():
+    osm_file = open(cw_london, "r")
+    postcode_types = set()
+    odd_postcode = set()
+    for event, elem in ET.iterparse(osm_file, events=("start",)):
+
+        if elem.tag == "node" or elem.tag == "way":
+            for tag in elem.iter("tag"):
+                if is_postcode(tag):
+                    m = postcode_re.search(tag.attrib['v'])
+                    if m:
+                        postcode_types.add(tag.attrib['v'])  
+                    else:
+                        odd_postcode.add(tag.attrib['v'])
+                        #print "Strange: %s" % str(tag.attrib['v'])
+
+    osm_file.close()
+    pprint.pprint(odd_postcode)
+    print "Break----------------------\n"
+    pprint.pprint(postcode_types)
+
+
+    return (postcode_types, odd_postcode)
+
+
+
 #Other unfixed problem------------------------------------------------------------------------------------------------------------- 
 #1. apostrophe in the work. Many cases of inconsistency usage of apostrophe noted. 
 #However, due to limited local knowledge and time-consuming nature to search for the correct names, 
@@ -125,4 +164,5 @@ if __name__ == "__main__":
     #Iter_parse() #call function iter_parse
     #osm_file.seek(0) #go back to the begining of the dataset
     #audit() #call function audit
-    improve_street_name()
+    #improve_street_name()
+    find_postcode()
