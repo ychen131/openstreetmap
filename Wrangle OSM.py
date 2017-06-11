@@ -117,6 +117,7 @@ def improve_street_name():
             print name, "=>", better_name
 
 #Double Postcode for one address---------------------------------------------------------------------------------------------------
+
 #We noted there are 6 addresses have two postcodes. After performing some research, it is noted that they are the rare cases that
 # both postcodes are for the same address. Therefore, we will keep the first postcode. eg. 'W2 1LN;W2 1LW'
 
@@ -145,12 +146,33 @@ def find_postcode():
                         #print "Strange: %s" % str(tag.attrib['v'])
 
     osm_file.close()
-    pprint.pprint(odd_postcode)
-    print "Break----------------------\n"
-    pprint.pprint(postcode_types)
+    # pprint.pprint(odd_postcode)
+    # print "Break----------------------\n"
+    # pprint.pprint(postcode_types)
 
 
     return (postcode_types, odd_postcode)
+
+#Drop area postcode and maintain only one postcode for those with two postcodes
+area_postcode_re = re.compile('^[A-Z]{1,2}[0-9]{1,2}[A-Z]? ?[0-9]?$')
+
+def update_postcode(odd_postcode):
+    if area_postcode_re.search(odd_postcode):
+        postcode = " "
+    else:
+        postcode = odd_postcode.split(";")[0]
+    return postcode
+
+
+def improve_postcode():
+    postcode_all = find_postcode()
+
+    for postcode in postcode_all[1]:
+        better_postcode = update_postcode(postcode)
+        print postcode, "=>", better_postcode
+
+
+
 
 
 
@@ -165,4 +187,5 @@ if __name__ == "__main__":
     #osm_file.seek(0) #go back to the begining of the dataset
     #audit() #call function audit
     #improve_street_name()
-    find_postcode()
+    #find_postcode()
+    improve_postcode()
