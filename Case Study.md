@@ -10,7 +10,7 @@ After living in the surburban for 4 years, my husband and I have decided to move
 
 
 ## Problems Encountered in the Map
-After downloading the data set for central west London, I have run a few audit trial using "wrangle_osm.py". Ther following issues were noted:
+After downloading the data set for central west London, I had a a quick scan through of the data and audit the street name and postcodes in the data set. The following problems were noted:
 
 - Inconsistent case and typo in street names
 - Over­abbreviated street names 
@@ -19,5 +19,5 @@ After downloading the data set for central west London, I have run a few audit t
 - Irrelevent postcodes
 - Address with double postcodes
 
-### Inconsistent case and typo in street names
-After running 
+### Problems with street names
+A list of expected street names, such as "Street" and "Road", are created. Regular expression is used to identify different types of street names. For any street names match the item within the lists are not investigated. 
