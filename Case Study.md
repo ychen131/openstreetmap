@@ -20,4 +20,23 @@ After downloading the data set for central west London, I had a a quick scan thr
 - Address with double postcodes
 
 ### Problems with street names
-A list of expected street names, such as "Street" and "Road", are created. Regular expression is used to identify different types of street names. For any street names match the item within the lists are not investigated. 
+A list of expected street names, such as "Street" and "Road", are created. Regular expression is used to identify different types of street names. For any street names match the item within the lists are not investigated further. 
+
+After ruing the "audit" function (see below), we noted there are a few issues with the street names.
+```python
+def audit(osmfile):
+    osm_file = open(osmfile, "r")
+    street_types = defaultdict(set)
+    for event, elem in ET.iterparse(osm_file, events=("start",)):
+
+        if elem.tag == "node" or elem.tag == "way":
+            for tag in elem.iter("tag"):
+                if is_street_name(tag):
+                    audit_street_type(street_types, tag.attrib['v'])
+```
+
+#### Inconsistent case and typo in street name
+Some street names are written in lower cases (eg. street). A few obvious typos also noted among street names, such as "Wqalk" and "Strreet".
+
+#### Over abbreviation
+A commen example for this paritular issue is "
