@@ -86,7 +86,6 @@ def find_postcode():
                         postcode_types.add(tag.attrib['v'])  
                     else:
                         odd_postcode.add(tag.attrib['v'])
-                        #print "Strange: %s" % str(tag.attrib['v'])
 
     osm_file.close()
 
