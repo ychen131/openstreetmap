@@ -20,7 +20,7 @@ After downloading the data set for central west London, I had a a quick scan thr
 - Address with double postcodes
 
 ### Problems with street names
-A list of expected street names, such as "Street" and "Road", are created. Regular expression is used to identify different types of street names. For any street names match the item within the lists are not investigated further. 
+A list of expected street names, such as "Street" and "Road", are created. Regular expression is used to identify different types of street names. For any street names match the item within the lists are not investigated further.  
 
 After ruing the "audit" function (see below), we noted there are a few issues with the street names.
 ```python
@@ -39,4 +39,30 @@ def audit(osmfile):
 Some street names are written in lower cases (eg. street). A few obvious typos also noted among street names, such as "Wqalk" and "Strreet".
 
 #### Over abbreviation
-A commen example for this paritular issue is "
+A commen example for this paritular issue is showing "St" rather than "Street".
+
+#### Inconsistent abbreviation for "Saint"
+The word "Saint" is very common among street names within UK. It is usually displayed as an abbreviated version of "St". Two other versions also appeared within the data set, "Saint" and "St."
+
+In order to eliminate the above three issues, an "update_name" function is used:
+```python
+def update_name(name, mapping):
+    name = string.capwords(name) 
+    m = street_type_re.search(name)
+    if m:
+        street_type = m.group()
+        if street_type not in expected and street_type in mapping:
+            name = re.sub(street_type_re, mapping[street_type], name)
+    else:
+        print "Strange street name: " % name #print any strange street name does not match the regular expression
+
+    if "Saint " in name or "St. " in name: 
+        name = name.replace("Saint ", "St ")
+        name = name.replace("St. ", "St ")
+    return name
+```
+
+This updated all the street names so that they all start with a capital letter. Typos noted were fixed using a list of mapping. Different versions of "Saint" are all converted to "St" in the data set.
+
+
+
