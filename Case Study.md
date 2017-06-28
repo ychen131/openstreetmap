@@ -68,8 +68,44 @@ This updated all the street names so that they all start with a capital letter. 
 Apart from the issues noted above, it is also noted that some street names have inappropriate use of apostrophies. *(Princes Gardens", "Prince's Gardens" and "Princes's Gardens")*. Due to limited local knowledge and time comsuing nature of finding all the correct version of those street names containing apostrophies, these street names are left unfixed in the data set.
 
 
-### Postcode Problems
+### Problems with postcodes
+A similar approach is taken to identify problems with postcode. Firstly, regular expression is used to identify postcodes under "way" and "node". Subsequently, the following function is used to identify postcodes.
 
+```python
+def find_postcode():
+    osm_file = open(cw_london, "r")
+    postcode_types = set()
+    odd_postcode = set()
+    for event, elem in ET.iterparse(osm_file, events=("start",)):
+
+        if elem.tag == "node" or elem.tag == "way":
+            for tag in elem.iter("tag"):
+                if is_postcode(tag):
+                    m = postcode_re.search(tag.attrib['v'])
+                    if m:
+                        postcode_types.add(tag.attrib['v'])  
+                    else:
+                        odd_postcode.add(tag.attrib['v'])
+                        #print "Strange: %s" % str(tag.attrib['v'])
+
+    osm_file.close()
+
+    return (postcode_types, odd_postcode)
+```
+
+After investigating the result, we noted two major problems with the postcpde. Area postcodes appears among postcode which is the post code for the entire are rather than a specific address *("SW6")*. In addition to are postcodes, we noted afew addres have two postcode *("W2 1NE;W2 1NF")*. In London, there are a few address containing two postcodes and both of them are correct. 
+
+To fix the problems with postcode, the following function was written:
+```python
+def update_postcode(odd_postcode):
+    if area_postcode_re.search(odd_postcode):
+        postcode = " "
+    else:
+        postcode = odd_postcode.split(";")[0]
+    return postcode
+```
+
+Area post codes are dropped from the data set and the first postcode is kept if two postcodes were identified for the same address. "W2 1NE;W2 1NF" is changed to "W2 1NE".
 
 
 
