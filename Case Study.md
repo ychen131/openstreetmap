@@ -36,13 +36,13 @@ def audit(osmfile):
 ```
 
 #### Inconsistent case and typo in street name
-Some street names are written in lower cases (eg. street). A few obvious typos also noted among street names, such as "Wqalk" and "Strreet".
+Some street names are written in lower cases *("street")*. A few obvious typos also noted among street names, such as "Wqalk" and "Strreet".
 
 #### Over abbreviation
 A commen example for this paritular issue is showing "St" rather than "Street".
 
 #### Inconsistent abbreviation for "Saint"
-The word "Saint" is very common among street names within UK. It is usually displayed as an abbreviated version of "St". Two other versions also appeared within the data set, "Saint" and "St."
+The word "Saint" is very common among street names within UK. It is usually displayed as an abbreviated version of "St". Two other versions also appeared within the data set, "Saint" and "St." *("Saint Alban's Grove" and "St Alban's Grove")*
 
 In order to eliminate the above three issues, an "update_name" function is used:
 ```python
@@ -63,6 +63,13 @@ def update_name(name, mapping):
 ```
 
 This updated all the street names so that they all start with a capital letter. Typos noted were fixed using a list of mapping. Different versions of "Saint" are all converted to "St" in the data set.
+
+#### Inappropriate use of apostrophie"s
+Apart from the issues noted above, it is also noted that some street names have inappropriate use of apostrophies. *(Princes Gardens", "Prince's Gardens" and "Princes's Gardens")*. Due to limited local knowledge and time comsuing nature of finding all the correct version of those street names containing apostrophies, these street names are left unfixed in the data set.
+
+
+### Postcode Problems
+
 
 
 
