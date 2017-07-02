@@ -141,3 +141,49 @@ FROM (SELECT uid FROM nodes UNION ALL SELECT uid FROM ways) e;
 ```
 2466
 
+### Top 10 contributing users
+```sql
+sqlite> SELECT e.user, COUNT(*) as num 
+FROM (SELECT user FROM nodes UNION ALL SELECT user FROM ways) e
+GROUP BY e.user
+ORDER BY num DESC
+LIMIT 10;
+```
+
+```sql
+user            num       
+--------------  ----------
+Derick Rethans  104466    
+Paul The Archi  94982     
+Ed Avis         62638     
+Amaroussi       51996     
+Tom Chance      40994     
+ecatmur         31292     
+Harry Wood      26272     
+Blumpsy         26166     
+abc26324        19572     
+sladen          14960  
+```
+
+### Numbers of restaurant, cafe and pub in the area
+
+```sql
+sqlite> SELECT value, count(*) as num 
+FROM nodes_tags 
+WHERE value = 'restaurant' OR value = 'pub' OR value = 'cafe' 
+GROUP BY value 
+ORDER BY num DESC limit 15;
+```
+
+```sql
+value       num       
+----------  ----------
+restaurant  1788      
+cafe        1224      
+pub         733  
+```
+
+
+
+
+
