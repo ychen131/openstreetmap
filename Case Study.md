@@ -122,3 +122,22 @@ ways.csv .................... 7.8 MB
 ways_nodes.csv .............. 22 MB
 ways_tags.csv ............... 17 MB
 ```
+### Number of ways
+```sql
+sqlite> SELECT COUNT(*) FROM nodes;
+```
+688069
+
+### Number of ways
+```sql
+sqlite> SELECT COUNT(*) FROM ways;
+```
+135019
+
+### Number of unique users
+```sql
+sqlite> SELECT COUNT(DISTINCT(e.uid))          
+FROM (SELECT uid FROM nodes UNION ALL SELECT uid FROM ways) e;
+```
+2466
+
