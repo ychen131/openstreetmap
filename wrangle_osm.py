@@ -82,7 +82,6 @@ mapping = { "St": "Street",
             "Strreet":"Street",
             "Sq":"Square",
             "Rd": "Road",
-            "Snowfields": "Snowsfields",
             "Wqalk":"Walk"
             }
 
@@ -170,10 +169,6 @@ def improve_postcode():
     for postcode in postcode_all[1]:
         better_postcode = update_postcode(postcode)
         print postcode, "=>", better_postcode
-
-
-
-
 
 
 #Other unfixed problem------------------------------------------------------------------------------------------------------------- 
