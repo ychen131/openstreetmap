@@ -152,18 +152,18 @@ LIMIT 10;
 ```
 
 ```sql
-user            num       
---------------  ----------
-Derick Rethans  104466    
-Paul The Archi  94982     
-Ed Avis         62638     
-Amaroussi       51996     
-Tom Chance      40994     
-ecatmur         31292     
-Harry Wood      26272     
-Blumpsy         26166     
-abc26324        19572     
-sladen          14960  
+user                  num       
+--------------------  ----------
+Derick Rethans        104466    
+Paul The Archivist    94982     
+Ed Avis               62638     
+Amaroussi             51996     
+Tom Chance            40994     
+ecatmur               31292     
+Harry Wood            26272     
+Blumpsy               26166     
+abc26324              19572     
+sladen                14960 
 ```
 
 ### Number of restaurants, cafes and pubs
@@ -217,3 +217,21 @@ One possible solution, is to standardise these street names in during the data w
 
 An alternative method is to use machine learning identifying potential duplication of street names based on certain degree of similarity. Subsequently, carry out research to find out the accurate name for a particular street.
 
+We can see evidence of this issue by using the following self-join:
+```sql
+sqlite> SELECT DISTINCT n1.value, n2.value 
+FROM nodes_tags n1, nodes_tags n2
+WHERE n1.key is 'street' AND n2.key is 'street' 
+AND n1.value like '%''%' AND n2.value like replace(n1.value, '''', '');
+
+value                           value                         
+------------------------------  ------------------------------
+Gray's Inn Road                 Grays Inn Road                
+St Peter's Street               St Peters Street              
+King's Road                     Kings Road                    
+John Prince's Street            John Princes Street           
+Earl's Court Square             Earls Court Square            
+Prince's Square                 Princes Square                
+King's Cross Road               Kings Cross Road   
+```
+Here the query is finding all street names containing apostrophes which match some other street name but with the apostrophe omitted.
