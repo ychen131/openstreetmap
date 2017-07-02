@@ -166,7 +166,7 @@ abc26324        19572
 sladen          14960  
 ```
 
-### Number of restaurants, cafes and pubs in the area
+### Number of restaurants, cafes and pubs
 
 ```sql
 sqlite> SELECT value, count(*) as num 
@@ -183,7 +183,32 @@ restaurant  1788
 cafe        1224      
 pub         733  
 ```
+### Top 10 most popular cusines
+```sql
+sqlite> SELECT nodes_tags.value, COUNT(*) as num
+FROM nodes_tags 
+JOIN (SELECT DISTINCT(id) FROM nodes_tags WHERE value='restaurant') i 
+ON nodes_tags.id=i.id
+WHERE nodes_tags.key='cuisine'
+GROUP BY nodes_tags.value
+ORDER BY num DESC
+LIMIT 10;
+```
 
+```sql
+value       num       
+----------  ----------
+italian     158       
+indian      106       
+japanese    65        
+pizza       55        
+chinese     52        
+french      50        
+thai        34        
+burger      31        
+asian       23        
+mexican     23    
+```
 
 ## Additional Ideas
 During data cleasing process, it is noted that there are cases where inappropriated approstrophies were identified. Likewise, there are also street names that are extremely similar *(eg. "Snowfields" and "Snowsfields")*. They are not fixed within the this project due to insufficient local knowledge as well as the time consuming nature of this task.
