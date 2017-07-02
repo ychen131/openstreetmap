@@ -5,6 +5,6 @@ The project contains the following files:
 - prepare_database.py: python code used to update the data based on data auditing result and export data into csv tables.
 - schema.sql: schema used to import csv files to sql database.
 - schema.py: schema used to export osm data to csv format
-- sample data.osm: small segmaent of data (size xxx MB)
+- sample data.osm: small segment of data (size xxx MB)
 - Reference
 
