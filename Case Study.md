@@ -5,26 +5,26 @@ Central West London
 - [http://www.openstreetmap.org/export#map=12/51.4935/-0.0783](http://www.openstreetmap.org/export#map=12/51.4935/-0.0783)
 - [http://overpass-api.de/api/map?bbox=-0.2101,51.4596,-0.0807,51.5540](http://overpass-api.de/api/map?bbox=-0.2101,51.4596,-0.0807,51.5540) (This is the link to download the data set)
 
-After living in the surburban for 4 years, my husband and I have decided to move to central west London. Hence I would like to this opportunity to explore the area on OpendStreetMap.
+After living in the surburbs for 4 years, my husband and I have decided to move to central west London. Hence I would like to use this opportunity to explore the area on OpendStreetMap.
 
 
 
 
 ## Problems Encountered in the Map
-After downloading the data set for central west London, I had a quick scan through of a small segment of data. It is noted immediatlely, some of the street names seem to be out of ordinary.  After running a provisional python file, the following problems were noted:
+After downloading the data set for central west London, I had a quick scan through of a small segment of data. It is noted immediately, some of the street names seem to be out of the ordinary.  After running a provisional python file, the following problems were noted:
 
 - Inconsistent case and typo in street names
-- Over­abbreviated street names 
+- Over-abbreviated street names 
 - Inconsistent abbreviation for "Saint"
 - Irrelevent postcodes
-- Inappropriate apostrophies within address
-- Address with double postcodes
+- Inappropriate apostrophes within address
+- Addresses with double postcodes
 
 
 ### Problems with street names
-A list of expected street names, such as "Street" and "Road", are created. Regular expression is used to identify different types of street names. For any street names match the item within the lists are not investigated further.  
+A list of expected street names, such as "Street" and "Road", is created. A regular expression is used to identify different types of street names within our data set. Any street names matching an item within the expected lists are not investigated further.  
 
-After ruing the "audit" function (see below), we noted there are a few issues with the street names.
+After running the `audit` function (see below), we noted there are a few issues with the street names.
 ```python
 def audit(osmfile):
     osm_file = open(osmfile, "r")
@@ -41,12 +41,12 @@ def audit(osmfile):
 Some street names are written in lower cases *("street")*. A few obvious typos also noted among street names, such as "Wqalk" and "Strreet".
 
 #### Over abbreviation
-A commen example for this paritular issue is showing "St" rather than "Street".
+A common example for this particular issue is showing "St" rather than "Street".
 
 #### Inconsistent abbreviation for "Saint"
 The word "Saint" is very common among street names within UK. It is usually displayed as an abbreviated version of "St". Two other versions also appeared within the data set, "Saint" and "St." *("Saint Alban's Grove" and "St Alban's Grove")*
 
-In order to eliminate the above three issues, an "update_name" function is used:
+In order to eliminate the above three issues, an `update_name` function is used:
 ```python
 def update_name(name, mapping):
     name = string.capwords(name) 
@@ -66,8 +66,8 @@ def update_name(name, mapping):
 
 This updated all the street names so that they all start with a capital letter. Typos noted were fixed using a list of mapping. Different versions of "Saint" are all converted to "St" in the data set.
 
-#### Inappropriate use of apostrophies
-Apart from the issues noted above, it is also noted that some street names have inappropriate use of apostrophies. *(Princes Gardens", "Prince's Gardens" and "Princes's Gardens")*. Due to limited local knowledge and time comsuing nature of finding all the correct version of those street names containing apostrophies, these street names are left unfixed in the data set.
+#### Inappropriate use of apostrophes
+Apart from the issues noted above, it is also noted that some street names have inappropriate use of apostrophes. *(Princes Gardens", "Prince's Gardens" and "Princes's Gardens")*. Due to limited local knowledge and time comsuing nature of finding all the correct version of those street names containing apostrophes, these street names are left unfixed in the data set.
 
 
 ### Problems with postcodes
@@ -152,18 +152,18 @@ LIMIT 10;
 ```
 
 ```sql
-user            num       
---------------  ----------
-Derick Rethans  104466    
-Paul The Archi  94982     
-Ed Avis         62638     
-Amaroussi       51996     
-Tom Chance      40994     
-ecatmur         31292     
-Harry Wood      26272     
-Blumpsy         26166     
-abc26324        19572     
-sladen          14960  
+user                  num       
+--------------------  ----------
+Derick Rethans        104466    
+Paul The Archivist    94982     
+Ed Avis               62638     
+Amaroussi             51996     
+Tom Chance            40994     
+ecatmur               31292     
+Harry Wood            26272     
+Blumpsy               26166     
+abc26324              19572     
+sladen                14960 
 ```
 
 ### Number of restaurants, cafes and pubs
@@ -211,9 +211,27 @@ mexican     23
 ```
 
 ## Additional Ideas
-During data cleasing process, it is noted that there are cases where inappropriated approstrophies were identified. Likewise, there are also street names that are extremely similar *(eg. "Snowfields" and "Snowsfields")*. They are not fixed within the this project due to insufficient local knowledge as well as the time consuming nature of this task.
+During data cleansing process, it is noted that there are cases where inappropriate aprostrophes were identified. Likewise, there are also street names that are extremely similar *(eg. "Snowfields" and "Snowsfields")*. They are not fixed within the this project due to insufficient local knowledge as well as the time consuming nature of this task.
 
 One possible solution, is to standardise these street names in during the data wrangling proces. This is a fast solution to the problem but the accuracy of the street name is comprimised.
 
-An alternative method is to use machine learning identifying potention duplication of street names based on certain degree of similarity. Subsequently, carry out reasarch to find out the accurate names a particular stree.
+An alternative method is to use machine learning identifying potential duplication of street names based on certain degree of similarity. Subsequently, carry out research to find out the accurate name for a particular street.
 
+We can see evidence of this issue by using the following self-join:
+```sql
+sqlite> SELECT DISTINCT n1.value, n2.value 
+FROM nodes_tags n1, nodes_tags n2
+WHERE n1.key is 'street' AND n2.key is 'street' 
+AND n1.value like '%''%' AND n2.value like replace(n1.value, '''', '');
+
+value                           value                         
+------------------------------  ------------------------------
+Gray's Inn Road                 Grays Inn Road                
+St Peter's Street               St Peters Street              
+King's Road                     Kings Road                    
+John Prince's Street            John Princes Street           
+Earl's Court Square             Earls Court Square            
+Prince's Square                 Princes Square                
+King's Cross Road               Kings Cross Road   
+```
+Here the query is finding all street names containing apostrophes which match some other street name but with the apostrophe omitted.
