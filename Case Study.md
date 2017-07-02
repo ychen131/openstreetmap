@@ -16,9 +16,10 @@ After downloading the data set for central west London, I had a quick scan throu
 - Inconsistent case and typo in street names
 - Over­abbreviated street names 
 - Inconsistent abbreviation for "Saint"
-- Inappropriate apostrophies within address
 - Irrelevent postcodes
+- Inappropriate apostrophies within address
 - Address with double postcodes
+
 
 ### Problems with street names
 A list of expected street names, such as "Street" and "Road", are created. Regular expression is used to identify different types of street names. For any street names match the item within the lists are not investigated further.  
@@ -65,12 +66,8 @@ def update_name(name, mapping):
 
 This updated all the street names so that they all start with a capital letter. Typos noted were fixed using a list of mapping. Different versions of "Saint" are all converted to "St" in the data set.
 
-#### Inappropriate use of apostrophie"s
-Apart from the issues notedvalue       num       
-----------  ----------
-restaurant  1788      
-cafe        1224      
-pub         733   above, it is also noted that some street names have inappropriate use of apostrophies. *(Princes Gardens", "Prince's Gardens" and "Princes's Gardens")*. Due to limited local knowledge and time comsuing nature of finding all the correct version of those street names containing apostrophies, these street names are left unfixed in the data set.
+#### Inappropriate use of apostrophies
+Apart from the issues noted above, it is also noted that some street names have inappropriate use of apostrophies. *(Princes Gardens", "Prince's Gardens" and "Princes's Gardens")*. Due to limited local knowledge and time comsuing nature of finding all the correct version of those street names containing apostrophies, these street names are left unfixed in the data set.
 
 
 ### Problems with postcodes
@@ -188,6 +185,10 @@ pub         733
 ```
 
 
+## Additional Ideas
+During data cleasing process, it is noted that there are cases where inappropriated approstrophies were identified. Likewise, there are also street names that are extremely similar *(eg. "Snowfields" and "Snowsfields")*. They are not fixed within the this project due to insufficient local knowledge as well as the time consuming nature of this task.
 
+One possible solution, is to standardise these street names in during the data wrangling proces. This is a fast solution to the problem but the accuracy of the street name is comprimised.
 
+An alternative method is to use machine learning identifying potention duplication of street names based on certain degree of similarity. Subsequently, carry out reasarch to find out the accurate names a particular stree.
 
