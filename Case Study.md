@@ -9,8 +9,9 @@ After living in the surburban for 4 years, my husband and I have decided to move
 
 
 
+
 ## Problems Encountered in the Map
-After downloading the data set for central west London, I had a a quick scan through of the data and audit the street name and postcodes in the data set. The following problems were noted:
+After downloading the data set for central west London, I had a quick scan through of a small segment of data. It is noted immediatlely, some of the street names seem to be out of ordinary.  After running a provisional python file, the following problems were noted:
 
 - Inconsistent case and typo in street names
 - Over­abbreviated street names 
@@ -108,3 +109,16 @@ Area post codes are dropped from the data set and the first postcode is kept if 
 
 
 
+
+## Overview of the data
+This section contains basic statistics about the dataset, the SQL queries used to gather them, and some additional ideas about the data in context.
+
+```
+central-west-london.osm ..... 184M B
+open_street_map.db .......... 86 MB
+nodes.csv  .................. 55 MB
+nodes_tags.csv .............. 11 MB
+ways.csv .................... 7.8 MB
+ways_nodes.csv .............. 22 MB
+ways_tags.csv ............... 17 MB
+```
