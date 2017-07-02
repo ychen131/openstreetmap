@@ -66,7 +66,11 @@ def update_name(name, mapping):
 This updated all the street names so that they all start with a capital letter. Typos noted were fixed using a list of mapping. Different versions of "Saint" are all converted to "St" in the data set.
 
 #### Inappropriate use of apostrophie"s
-Apart from the issues noted above, it is also noted that some street names have inappropriate use of apostrophies. *(Princes Gardens", "Prince's Gardens" and "Princes's Gardens")*. Due to limited local knowledge and time comsuing nature of finding all the correct version of those street names containing apostrophies, these street names are left unfixed in the data set.
+Apart from the issues notedvalue       num       
+----------  ----------
+restaurant  1788      
+cafe        1224      
+pub         733   above, it is also noted that some street names have inappropriate use of apostrophies. *(Princes Gardens", "Prince's Gardens" and "Princes's Gardens")*. Due to limited local knowledge and time comsuing nature of finding all the correct version of those street names containing apostrophies, these street names are left unfixed in the data set.
 
 
 ### Problems with postcodes
@@ -165,7 +169,7 @@ abc26324        19572
 sladen          14960  
 ```
 
-### Numbers of restaurant, cafe and pub in the area
+### Number of restaurants, cafes and pubs in the area
 
 ```sql
 sqlite> SELECT value, count(*) as num 
